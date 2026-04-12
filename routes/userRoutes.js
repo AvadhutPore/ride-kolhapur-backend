@@ -20,4 +20,21 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// Login API
+router.post("/login", async (req, res) => {
+  try {
+    const { mobile } = req.body;
+
+    const user = await User.findOne({ mobile });
+
+    if (user) {
+      res.json({ success: true, user });
+    } else {
+      res.json({ success: false, message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

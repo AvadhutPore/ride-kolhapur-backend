@@ -15,7 +15,9 @@ router.post("/create", async (req, res) => {
 
     await ride.save();
 
-    // 🔥 Emit to drivers
+    // ✅ ADD LOG HERE
+    console.log("Emitting newRide:", ride._id);
+
     const io = req.app.get("io");
     io.emit("newRide", ride);
 

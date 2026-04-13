@@ -2,6 +2,19 @@ const express = require("express");
 const router = express.Router();
 const Ride = require("../models/Ride");
 
+
+
+// Get All Rides
+router.get("/", async (req, res) => {
+  try {
+    const rides = await Ride.find().sort({ _id: -1 }); // latest first
+    res.json({ success: true, rides });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
+
 // Create Ride
 router.post("/create", async (req, res) => {
   try {

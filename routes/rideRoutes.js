@@ -39,4 +39,15 @@ router.post("/cancel", async (req, res) => {
   }
 });
 
+
+// Get Ride by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const ride = await Ride.findById(req.params.id);
+    res.json({ success: true, ride });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+});
+
 module.exports = router;

@@ -19,7 +19,7 @@ router.post("/create", async (req, res) => {
     console.log("Emitting newRide:", ride._id);
 
     const io = req.app.get("io");
-    io.emit("newRide", ride);
+    io.sockets.emit("newRide", ride);
 
     res.json({ success: true, ride });
   } catch (err) {
@@ -70,7 +70,7 @@ router.post("/accept", async (req, res) => {
   const io = req.app.get("io");
 
   // 🔥 Notify user
-  io.emit("rideAccepted", ride);
+  io.sockets.emit("rideAccepted", ride);
 
   res.json({ success: true });
 });

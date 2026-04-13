@@ -15,6 +15,7 @@ const io = new Server(server, {
   cors: {
     origin: "*",
   },
+  transports: ["websocket", "polling"], // ✅ ADD THIS
 });
 
 app.set("io", io); // make io available in routes

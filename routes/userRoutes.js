@@ -5,12 +5,12 @@ const User = require("../models/User");
 // Signup API
 router.post("/signup", async (req, res) => {
   try {
-    const { name, mobile } = req.body;
+    const { name, mobile, role } = req.body;
 
     let user = await User.findOne({ mobile });
 
     if (!user) {
-      user = new User({ name, mobile });
+       user = new User({name, mobile, role: role || "user",});
       await user.save();
     }
 

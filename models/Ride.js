@@ -5,9 +5,10 @@ const rideSchema = new mongoose.Schema({
   pickup: String,
   drop: String,
   status: {
-    type: String,
-    default: "searching",
-  },
+  type: String,
+  enum: ["searching", "accepted", "started", "completed", "cancelled"],
+  default: "searching",
+},
 });
 
 module.exports = mongoose.model("Ride", rideSchema);

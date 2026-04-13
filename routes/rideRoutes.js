@@ -21,4 +21,22 @@ router.post("/create", async (req, res) => {
   }
 });
 
+
+// Cancel Ride
+router.post("/cancel", async (req, res) => {
+  try {
+    const { rideId } = req.body;
+
+    const ride = await Ride.findByIdAndUpdate(
+      rideId,
+      { status: "cancelled" },
+      { new: true }
+    );
+
+    res.json({ success: true, ride });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

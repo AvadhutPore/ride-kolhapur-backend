@@ -2,12 +2,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
+const rideRoutes = require("./routes/rideRoutes");
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type"]
+}));
 app.use(express.json());
 app.use("/api/user", userRoutes);
+app.use("/api/ride", rideRoutes);
 
 // Test route
 app.get("/", (req, res) => {

@@ -72,11 +72,13 @@ router.get("/:id", async (req, res) => {
 
 // Get Ride Accept
 router.post("/accept", async (req, res) => {
-  const { rideId } = req.body;
+  const { rideId, driverId } = req.body;
 
   const ride = await Ride.findByIdAndUpdate(
     rideId,
-    { status: "accepted" },
+    { status: "accepted",
+      driverId: driverId, // ✅ assign driver
+     },
     { new: true }
   );
 
@@ -85,7 +87,7 @@ router.post("/accept", async (req, res) => {
   // 🔥 Notify user
   io.sockets.emit("rideAccepted", ride);
 
-  res.json({ success: true });
+  res.json({ success: true, ride });
 });
 
 module.exports = router;

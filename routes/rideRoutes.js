@@ -15,9 +15,13 @@ router.post("/create", async (req, res) => {
 
     await ride.save();
 
+    // 🔥 Emit to drivers
+    const io = req.app.get("io");
+    io.emit("newRide", ride);
+
     res.json({ success: true, ride });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false });
   }
 });
 
@@ -48,6 +52,25 @@ router.get("/:id", async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false });
   }
+});
+
+
+// Get Ride Accept
+router.post("/accept", async (req, res) => {
+  const { rideId } = req.body;
+
+  const ride = await Ride.findByIdAndUpdate(
+    rideId,
+    { status: "accepted" },
+    { new: true }
+  );
+
+  const io = req.app.get("io");
+
+  // 🔥 Notify user
+  io.emit("rideAccepted", ride);
+
+  res.json({ success: true });
 });
 
 module.exports = router;

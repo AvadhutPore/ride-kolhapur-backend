@@ -90,4 +90,15 @@ router.post("/accept", async (req, res) => {
   res.json({ success: true, ride });
 });
 
+// Get ride history for a specific user
+router.get("/user-history/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const rides = await Ride.find({ userId }).sort({ _id: -1 }); // Latest rides first
+    res.json({ success: true, rides });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

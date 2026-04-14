@@ -37,4 +37,16 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
+// Get all available drivers
+router.get("/available-drivers", async (req, res) => {
+  try {
+    // In a real app, you'd filter by 'isOnline: true' or coordinates
+    const drivers = await User.find({ role: "driver" });
+    res.json({ success: true, drivers });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

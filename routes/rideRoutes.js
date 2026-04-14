@@ -18,21 +18,21 @@ router.get("/", async (req, res) => {
 // Create Ride
 router.post("/create", async (req, res) => {
   try {
-    const { userId, pickup, drop } = req.body;
+    const { userId, driverId, pickup, drop } = req.body;
 
     const ride = new Ride({
       userId,
+      driverId, // Store the driver the user picked
       pickup,
       drop,
+      status: "searching"
     });
 
     await ride.save();
 
-    // ✅ ADD LOG HERE
-    console.log("Emitting newRide:", ride._id);
-
     const io = req.app.get("io");
-    io.sockets.emit("newRide", ride);
+    // Emit to everyone, but the DriverPanel will filter by driverId
+    io.sockets.emit("newRideRequest", ride); 
 
     res.json({ success: true, ride });
   } catch (err) {

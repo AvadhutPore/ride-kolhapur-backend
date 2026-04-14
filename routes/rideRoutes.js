@@ -41,6 +41,27 @@ router.post("/create", async (req, res) => {
 });
 
 
+// 🏁 Complete Ride
+router.post("/complete", async (req, res) => {
+  try {
+    const { rideId } = req.body;
+    const ride = await Ride.findByIdAndUpdate(
+      rideId,
+      { status: "completed" },
+      { new: true }
+    );
+    
+    // Notify the user that they have arrived
+    const io = req.app.get("io");
+    io.sockets.emit("rideCompleted", ride);
+
+    res.json({ success: true, ride });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+
 // Cancel Ride
 router.post("/cancel", async (req, res) => {
   try {
@@ -70,26 +91,34 @@ router.get("/:id", async (req, res) => {
 });
 
 
-// Get Ride Accept
+// ✅ Update Accept Ride to include Vehicle Info for the User
 router.post("/accept", async (req, res) => {
-  const { rideId, driverId } = req.body;
-  
-  // Find driver to get their vehicle info
-  const driver = await User.findById(driverId);
+  try {
+    const { rideId, driverId } = req.body;
+    
+    // Get driver details
+    const User = require("../models/User");
+    const driver = await User.findById(driverId);
 
-  const ride = await Ride.findByIdAndUpdate(
-    rideId,
-    { 
-      status: "accepted", 
-      driverId: driverId,
-      // You can also store a snapshot of vehicle info in the ride
-      vehicleDetails: `${driver.vehicleInfo.model} (${driver.vehicleInfo.plateNumber})`
-    },
-    { new: true }
-  );
+    const ride = await Ride.findByIdAndUpdate(
+      rideId,
+      { 
+        status: "accepted", 
+        driverId: driverId,
+        // Optional: Save vehicle snapshot into the ride record
+        vehicleModel: driver.vehicleInfo?.model,
+        plateNumber: driver.vehicleInfo?.plateNumber
+      },
+      { new: true }
+    );
 
-  req.app.get("io").sockets.emit("rideAccepted", ride);
-  res.json({ success: true, ride });
+    const io = req.app.get("io");
+    io.sockets.emit("rideAccepted", ride);
+
+    res.json({ success: true, ride });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
 });
 
 // Get ride history for a specific user

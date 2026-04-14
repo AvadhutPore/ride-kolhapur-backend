@@ -73,20 +73,22 @@ router.get("/:id", async (req, res) => {
 // Get Ride Accept
 router.post("/accept", async (req, res) => {
   const { rideId, driverId } = req.body;
+  
+  // Find driver to get their vehicle info
+  const driver = await User.findById(driverId);
 
   const ride = await Ride.findByIdAndUpdate(
     rideId,
-    { status: "accepted",
-      driverId: driverId, // ✅ assign driver
-     },
+    { 
+      status: "accepted", 
+      driverId: driverId,
+      // You can also store a snapshot of vehicle info in the ride
+      vehicleDetails: `${driver.vehicleInfo.model} (${driver.vehicleInfo.plateNumber})`
+    },
     { new: true }
   );
 
-  const io = req.app.get("io");
-
-  // 🔥 Notify user
-  io.sockets.emit("rideAccepted", ride);
-
+  req.app.get("io").sockets.emit("rideAccepted", ride);
   res.json({ success: true, ride });
 });
 
